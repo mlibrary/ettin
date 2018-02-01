@@ -60,7 +60,7 @@ module Ettin
     alias_method :==, :eql?
 
     def each
-      hash.each{|k,v| yield k,v }
+      hash.each{|k,v| yield k, convert(v) }
     end
 
     private
