@@ -2,15 +2,22 @@ require "deep_merge"
 require "yaml"
 require "erb"
 require "active_support/core_ext/hash/keys"
+require "ettin/hash_source"
+require "ettin/yaml_source"
+require "ettin/options_source"
 
 module Ettin
   class Options
-    def initialize(files)
+    include Enumerable
+
+    def initialize(*files)
       @hash = {}
       files
-        .map{|file| hashify(file) }
-        .map{|hash| hash.deep_symbolize_keys }
-        .each{|hash| @hash.deep_merge!(hash) }
+        .flatten
+        .map{|target| source_for(target) }
+        .map{|source| source.load }
+        .map{|h| h.deep_transform_keys{|key| key.to_s.to_sym } }
+        .each{|h| @hash.deep_merge!(h, overwrite_arrays: true) }
     end
 
     def method_missing(method, *args, &block)
@@ -25,24 +32,62 @@ module Ettin
       super(method, include_all) || self.has_key?(method)
     end
 
-    def hashify(target)
-      return target if target.is_a? Hash
-      YAML.load(ERB.new(File.read(target)).result) || {}
-    end
-
     def key?(key)
-      @hash.has_key?(key.to_sym)
+      hash.has_key?(key.to_s.to_sym)
     end
     alias_method :has_key?, :key?
 
     def [](key)
-      value = @hash[key.to_sym]
-      if value.is_a? Hash
-        Options.new([value])
+      convert(hash[key.to_s.to_sym])
+    end
+
+    def to_h
+      hash
+    end
+    alias_method :to_hash, :to_h
+
+    def empty?
+      hash.empty?
+    end
+
+    def keys
+      hash.keys
+    end
+
+    def eql?(other)
+      to_h == other.to_h
+    end
+    alias_method :==, :eql?
+
+    def each
+      hash.each{|k,v| yield k,v }
+    end
+
+    private
+
+    attr_reader :hash
+
+    def convert(value)
+      case value
+      when Hash
+        Options.new(value)
+      when Array
+        value.map{|i| convert(i)}
       else
         value
       end
     end
+
+    def source_for(target)
+      if target.is_a? Hash
+        HashSource.new(target)
+      elsif target.is_a? Options
+        OptionsSource.new(target)
+      else
+        YAMLSource.new(target)
+      end
+    end
+
   end
 
 end
