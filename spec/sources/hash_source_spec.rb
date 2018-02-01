@@ -1,15 +1,16 @@
 require 'spec_helper'
+require "ettin/hash_source"
 
-module Config::Sources
+module Ettin
   describe HashSource do
     it "should take a hash as initializer" do
-      source = HashSource.new(foo: 5)
-      expect(source.hash).to eq(foo: 5)
+      source = described_class.new(foo: 5)
+      expect(source.load).to eq(foo: 5)
     end
 
     context "basic hash" do
       let(:source) do
-        HashSource.new(
+        described_class.new(
           {
             "size" => 2,
             "section" => {
@@ -35,7 +36,7 @@ module Config::Sources
 
     context "parameter is not a hash" do
       let(:source) do
-        HashSource.new "hello world"
+        described_class.new "hello world"
       end
 
       it "should return an empty hash" do
