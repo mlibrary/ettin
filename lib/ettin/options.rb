@@ -11,34 +11,47 @@ module Ettin
     include Enumerable
 
     def initialize(*files)
-      @hash = {}
+      @hash = Hash.new(nil)
       files
         .flatten
         .map{|target| source_for(target) }
         .map{|source| source.load }
-        .map{|h| h.deep_transform_keys{|key| key.to_s.to_sym } }
+        .map{|h| h.deep_transform_keys{|key| convert_key(key) } }
         .each{|h| @hash.deep_merge!(h, overwrite_arrays: true) }
     end
 
     def method_missing(method, *args, &block)
-      if respond_to?(method)
-        self[method]
+      super(method, *args, &block) unless respond_to?(method)
+      if is_bang?(method) && !has_key?(debangify(method))
+        raise KeyError, "key #{debangify(method)} not found"
       else
-        super(method, *args, block)
+        self[debangify(method)]
       end
     end
 
+    # We respond to:
+    # * all methods our parents respond to
+    # * all methods that are mostly alpha-numeric: /^[a-zA-Z_0-9]*$/
+    # * all methods that are mostly alpha-numeric + !: /^[a-zA-Z_0-9]*\!$/
     def respond_to?(method, include_all = false)
-      super(method, include_all) || self.has_key?(method)
+      super(method, include_all) || /^[a-zA-Z_0-9]*\!?$/.match(method.to_s)
     end
 
     def key?(key)
-      hash.has_key?(key.to_s.to_sym)
+      hash.has_key?(convert_key(key))
     end
     alias_method :has_key?, :key?
 
+    def merge!(other)
+      @hash.deep_merge!(other.to_h, overwrite_arrays: true)
+    end
+
     def [](key)
-      convert(hash[key.to_s.to_sym])
+      convert(hash[convert_key(key)])
+    end
+
+    def []=(key, value)
+      hash[convert_key(key)] = value
     end
 
     def to_h
@@ -65,6 +78,18 @@ module Ettin
 
     private
 
+    def is_bang?(method)
+      method.to_s[-1] == "!"
+    end
+
+    def debangify(method)
+      if is_bang?(method)
+        method.to_s.chop.to_sym
+      else
+        method
+      end
+    end
+
     attr_reader :hash
 
     def convert(value)
@@ -86,6 +111,10 @@ module Ettin
       else
         YAMLSource.new(target)
       end
+    end
+
+    def convert_key(key)
+      key.to_s.to_sym
     end
 
   end
