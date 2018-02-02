@@ -1,23 +1,10 @@
-require "deep_merge"
-require "yaml"
-require "erb"
-require "active_support/core_ext/hash/keys"
-require "ettin/hash_source"
-require "ettin/yaml_source"
-require "ettin/options_source"
-
 module Ettin
   class Options
     include Enumerable
 
-    def initialize(*files)
-      @hash = Hash.new(nil)
-      files
-        .flatten
-        .map{|target| source_for(target) }
-        .map{|source| source.load }
-        .map{|h| h.deep_transform_keys{|key| convert_key(key) } }
-        .each{|h| @hash.deep_merge!(h, overwrite_arrays: true) }
+    def initialize(hash)
+      @hash = hash
+      @hash.default = nil
     end
 
     def method_missing(method, *args, &block)
@@ -95,21 +82,11 @@ module Ettin
     def convert(value)
       case value
       when Hash
-        Options.new(value)
+        Options.build(value)
       when Array
         value.map{|i| convert(i)}
       else
         value
-      end
-    end
-
-    def source_for(target)
-      if target.is_a? Hash
-        HashSource.new(target)
-      elsif target.is_a? Options
-        OptionsSource.new(target)
-      else
-        YAMLSource.new(target)
       end
     end
 
