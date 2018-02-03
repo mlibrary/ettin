@@ -1,4 +1,4 @@
-require "ettin/hash_source"
+require "ettin/sources/hash_source"
 
 module Ettin
   describe HashSource do

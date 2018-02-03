@@ -1,8 +1,15 @@
+require "ettin/source"
 require "erb"
 require "yaml"
 
 module Ettin
-  class YAMLSource
+  class YAMLSource < Source
+    register_default(self)
+
+    def self.handles?(target)
+      true
+    end
+
     def initialize(path)
       @path = path
     end

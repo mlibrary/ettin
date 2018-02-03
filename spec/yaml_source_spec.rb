@@ -1,4 +1,4 @@
-require "ettin/yaml_source"
+require "ettin/sources/yaml_source"
 
 module Ettin
   describe YAMLSource do
