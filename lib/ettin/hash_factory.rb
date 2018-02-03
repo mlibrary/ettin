@@ -1,8 +1,8 @@
 require "deep_merge"
-require "active_support/core_ext/hash/keys"
 require "ettin/hash_source"
 require "ettin/yaml_source"
 require "ettin/options_source"
+require "ettin/deep_transform"
 
 module Ettin
   class HashFactory
