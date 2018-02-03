@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "ettin/key"
 
 module Ettin
@@ -9,13 +11,13 @@ module Ettin
 
     def initialize(hash)
       @hash = hash
-      @hash.deep_transform_keys!{|key| key.to_s.to_sym }
+      @hash.deep_transform_keys! {|key| key.to_s.to_sym }
       @hash.default = nil
     end
 
     def method_missing(method, *args, &block)
       super(method, *args, &block) unless respond_to?(method)
-      if is_bang?(method) && !has_key?(debang(method))
+      if is_bang?(method) && !key?(debang(method))
         raise KeyError, "key #{debang(method)} not found"
       else
         self[debang(method)]
@@ -31,7 +33,7 @@ module Ettin
     end
 
     def key?(key)
-      hash.has_key?(Key.new(key))
+      hash.key?(Key.new(key))
     end
     alias_method :has_key?, :key?
 
@@ -58,7 +60,7 @@ module Ettin
     alias_method :==, :eql?
 
     def each
-      hash.each{|k,v| yield k, convert(v) }
+      hash.each {|k, v| yield k, convert(v) }
     end
 
     private
@@ -82,7 +84,7 @@ module Ettin
       when Hash
         Options.new(value)
       when Array
-        value.map{|i| convert(i)}
+        value.map {|i| convert(i) }
       else
         value
       end

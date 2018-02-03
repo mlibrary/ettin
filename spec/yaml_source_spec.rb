@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "ettin/sources/yaml_source"
 
 module Ettin

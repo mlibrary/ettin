@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Ettin
   class Key
     def initialize(key)
@@ -35,4 +37,3 @@ module Ettin
 
   end
 end
-

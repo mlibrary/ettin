@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This copyright notice applies to this file only.
 # The original source was taken from:
 # https://github.com/basecamp/deep_hash_transform
@@ -33,29 +35,31 @@ module Ettin
     #
     #  hash.deep_transform_keys{ |key| key.to_s.upcase }
     #  # => {"PERSON"=>{"NAME"=>"Rob", "AGE"=>"28"}}
-    def deep_transform_keys(&block)
-      result = {}
-      each do |key, value|
-        result[yield(key)] = value.is_a?(Hash) ? value.deep_transform_keys(&block) : value
+    unless method_defined?(:deep_transform_keys)
+      def deep_transform_keys(&block)
+        result = {}
+        each do |key, value|
+          result[yield(key)] = value.is_a?(Hash) ? value.deep_transform_keys(&block) : value
+        end
+        result
       end
-      result
-    end unless method_defined?(:deep_transform_keys)
+    end
 
     # Destructively convert all keys by using the block operation.
     # This includes the keys from the root hash and from all
     # nested hashes.
-    def deep_transform_keys!(&block)
-      keys.each do |key|
-        value = delete(key)
-        self[yield(key)] = value.is_a?(Hash) ? value.deep_transform_keys!(&block) : value
+    unless method_defined?(:deep_transform_keys!)
+      def deep_transform_keys!(&block)
+        keys.each do |key|
+          value = delete(key)
+          self[yield(key)] = value.is_a?(Hash) ? value.deep_transform_keys!(&block) : value
+        end
+        self
       end
-      self
-    end unless method_defined?(:deep_transform_keys!)
+    end
   end
 end
 
 unless {}.respond_to?(:deep_transform_keys)
   Hash.include Ettin::DeepTransform
 end
-
-

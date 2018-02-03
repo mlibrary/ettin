@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "ettin/source"
 
 module Ettin
@@ -17,6 +19,7 @@ module Ettin
     end
 
     private
+
     attr_reader :hash
   end
 end

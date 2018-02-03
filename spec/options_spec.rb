@@ -1,11 +1,11 @@
+# frozen_string_literal: true
+
 require "ettin/options"
 require "json"
 
-
 describe Ettin::Options do
-
   describe "#to_h, #to_hash" do
-    let(:config) { described_class.new(hash)}
+    let(:config) { described_class.new(hash) }
     let(:hash) do
       {
         size: 2, section: {
@@ -13,7 +13,7 @@ describe Ettin::Options do
             { name: "yahoo.com" },
             { name: "amazon.com" }
           ]
-         }
+        }
       }
     end
 
@@ -62,24 +62,24 @@ describe Ettin::Options do
     let(:hash) do
       { size: 1, server: "google.com" }
     end
-    let(:other_hash) { { :options => { :suboption => 'value' }, :server => 'amazon.com' } }
+    let(:other_hash) { { options: { suboption: "value" }, server: "amazon.com" } }
 
-    it 'should be chainable' do
+    it "should be chainable" do
       expect(config.merge!({})).to eq(config)
     end
 
-    it 'should preserve existing keys' do
+    it "should preserve existing keys" do
       expect { config.merge!({}) }.to_not change { config.keys }
     end
 
-    it 'should recursively merge keys' do
+    it "should recursively merge keys" do
       config.merge!(other_hash)
-      expect(config.options.suboption).to eq('value')
+      expect(config.options.suboption).to eq("value")
     end
 
-    it 'should rewrite a merged value' do
+    it "should rewrite a merged value" do
       expect { config.merge!(other_hash) }.to change { config.server }
-        .from('google.com').to('amazon.com')
+        .from("google.com").to("amazon.com")
     end
   end
 
@@ -91,32 +91,32 @@ describe Ettin::Options do
         inner: { something1: "blah1", something2: "blah2" }
       }
     end
-    let(:other_hash) { { :inner => { :something1 => 'changed1', :something3 => 'changed3' } } }
+    let(:other_hash) { { inner: { something1: "changed1", something3: "changed3" } } }
 
-    it 'should preserve first level keys' do
+    it "should preserve first level keys" do
       expect { config.merge!(other_hash) }.to_not change { config.keys }
     end
 
-    it 'should preserve nested key' do
+    it "should preserve nested key" do
       config.merge!(other_hash)
-      expect(config.inner.something2).to eq('blah2')
+      expect(config.inner.something2).to eq("blah2")
     end
 
-    it 'should add new nested key' do
+    it "should add new nested key" do
       expect { config.merge!(other_hash) }
         .to change { config.inner.something3 }
         .from(nil)
         .to("changed3")
     end
 
-    it 'should rewrite a merged value' do
+    it "should rewrite a merged value" do
       expect { config.merge!(other_hash) }.to change { config.inner.something1 }
-        .from('blah1').to('changed1')
+        .from("blah1").to("changed1")
     end
   end
 
   context "[] accessors" do
-    let(:config) { described_class.new(hash)}
+    let(:config) { described_class.new(hash) }
     let(:hash) do
       {
         size: 2, section: {
@@ -124,24 +124,24 @@ describe Ettin::Options do
             { name: "yahoo.com" },
             { name: "amazon.com" }
           ]
-         }
+        }
       }
     end
 
     it "should access attributes using []" do
-      expect(config.section['size']).to eq(3)
+      expect(config.section["size"]).to eq(3)
       expect(config.section[:size]).to eq(3)
       expect(config[:section][:size]).to eq(3)
     end
 
     it "should set values using []=" do
-      config.section[:foo] = 'bar'
-      expect(config.section.foo).to eq('bar')
+      config.section[:foo] = "bar"
+      expect(config.section.foo).to eq("bar")
     end
   end
 
   context "enumerable" do
-    let(:config) { described_class.new(hash)}
+    let(:config) { described_class.new(hash) }
     let(:hash) do
       {
         size: 2, section: {
@@ -149,29 +149,29 @@ describe Ettin::Options do
             { name: "yahoo.com" },
             { name: "amazon.com" }
           ]
-         }
+        }
       }
     end
 
     it "should enumerate top level parameters" do
       keys = []
-      config.each { |key, value| keys << key }
+      config.each {|key, _value| keys << key }
       expect(keys).to eq([:size, :section])
     end
 
     it "should enumerate inner parameters" do
       keys = []
-      config.section.each { |key, value| keys << key }
+      config.section.each {|key, _value| keys << key }
       expect(keys).to eq([:size, :servers])
     end
 
     it "should have methods defined by Enumerable" do
-      expect(config.map { |key, value| key }).to eq([:size, :section])
+      expect(config.map {|key, _value| key }).to eq([:size, :section])
     end
   end
 
   context "keys" do
-    let(:config) { described_class.new(hash)}
+    let(:config) { described_class.new(hash) }
     let(:hash) do
       {
         size: 2, section: {
@@ -179,7 +179,7 @@ describe Ettin::Options do
             { name: "yahoo.com" },
             { name: "amazon.com" }
           ]
-         }
+        }
       }
     end
 
@@ -192,29 +192,28 @@ describe Ettin::Options do
     end
   end
 
-  context '#key? and #has_key? methods' do
+  context "#key? and #has_key? methods" do
     let(:config) do
-      described_class.new({
+      described_class.new(
         existing: 1,
         "complex_value" => 2,
         "even_more_complex_value=" => 3,
         nested: { existing: 4 }
-      })
+      )
     end
 
-    it 'should test if a value exists for a given key' do
+    it "should test if a value exists for a given key" do
       expect(config.key?(:not_existing)).to eq(false)
       expect(config.key?(:complex_value)).to eq(true)
-      expect(config.key?('even_more_complex_value='.to_sym)).to eq(true)
+      expect(config.key?("even_more_complex_value=".to_sym)).to eq(true)
       expect(config.key?(:nested)).to eq(true)
       expect(config.nested.key?(:not_existing)).to eq(false)
       expect(config.nested.key?(:existing)).to eq(true)
     end
 
-    it 'should not be sensible to key\'s class' do
+    it "should not be sensible to key's class" do
       expect(config.key?(:existing)).to eq(true)
-      expect(config.key?('existing')).to eq(true)
+      expect(config.key?("existing")).to eq(true)
     end
   end
-
 end

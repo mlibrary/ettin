@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "ettin/sources/hash_source"
 
 module Ettin
@@ -10,12 +12,10 @@ module Ettin
     context "basic hash" do
       let(:source) do
         described_class.new(
-          {
-            "size" => 2,
-            "section" => {
-              "size" => 3,
-              "servers" => [ {"name" => "yahoo.com"}, {"name" => "amazon.com"} ]
-            }
+          "size" => 2,
+          "section" => {
+            "size"    => 3,
+            "servers" => [{ "name" => "yahoo.com" }, { "name" => "amazon.com" }]
           }
         )
       end

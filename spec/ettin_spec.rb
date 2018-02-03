@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 require "ettin"
 require "pathname"
-
 
 describe Ettin do
   let(:fixture_path) { Pathname.new(__FILE__).dirname/"fixtures" }
@@ -9,12 +10,12 @@ describe Ettin do
     it "should get setting files" do
       config = described_class.settings_files("root/config", "test")
       expect(config).to eq([
-        Pathname.new('root/config/settings.yml'),
-        Pathname.new('root/config/settings/test.yml'),
-        Pathname.new('root/config/environments/test.yml'),
-        Pathname.new('root/config/settings.local.yml'),
-        Pathname.new('root/config/settings/test.local.yml'),
-        Pathname.new('root/config/environments/test.local.yml'),
+        Pathname.new("root/config/settings.yml"),
+        Pathname.new("root/config/settings/test.yml"),
+        Pathname.new("root/config/environments/test.yml"),
+        Pathname.new("root/config/settings.local.yml"),
+        Pathname.new("root/config/settings/test.local.yml"),
+        Pathname.new("root/config/environments/test.local.yml")
       ])
     end
   end
@@ -24,10 +25,10 @@ describe Ettin do
       config = described_class.for(["#{fixture_path}/settings.yml"])
       expect(config.size).to eq(1)
       expect(config.server).to eq("google.com")
-      expect(config['1']).to eq('one')
+      expect(config["1"]).to eq("one")
       expect(config.photo_sizes.avatar).to eq([60, 60])
-      expect(config.root['yahoo.com']).to eq(2)
-      expect(config.root['google.com']).to eq(3)
+      expect(config.root["yahoo.com"]).to eq(2)
+      expect(config.root["google.com"]).to eq(3)
     end
 
     it "should load 2 basic config files" do
@@ -65,7 +66,6 @@ describe Ettin do
       expect(config.server).to eq("google.com")
       expect(config.size).to eq(2)
     end
-
 
     context "Nested Settings" do
       let(:config) do
@@ -111,18 +111,18 @@ describe Ettin do
 
     context "Merging hash at runtime via ::new" do
       let(:config) { described_class.for("#{fixture_path}/settings.yml") }
-      let(:hash) { { :options => { :suboption => 'value' }, :server => 'amazon.com' } }
+      let(:hash) { { options: { suboption: "value" }, server: "amazon.com" } }
 
-      it 'should be chainable' do
+      it "should be chainable" do
         expect(described_class.for(config, {})).to eq(config)
       end
 
-      it 'should recursively merge keys' do
+      it "should recursively merge keys" do
         new_config = described_class.for(config, hash)
-        expect(new_config.options.suboption).to eq('value')
+        expect(new_config.options.suboption).to eq("value")
       end
 
-      it 'should rewrite a merged value' do
+      it "should rewrite a merged value" do
         new_config = described_class.for(config, hash)
         expect(new_config.server).to eql("amazon.com")
       end
@@ -130,42 +130,41 @@ describe Ettin do
 
     context "Merging nested hash at runtime via ::new" do
       let(:config) { described_class.for("#{fixture_path}/deep_merge/config1.yml") }
-      let(:hash) { { :inner => { :something1 => 'changed1', :something3 => 'changed3' } } }
+      let(:hash) { { inner: { something1: "changed1", something3: "changed3" } } }
       let(:new_config) { described_class.for(config, hash) }
 
-      it 'should preserve first level keys' do
+      it "should preserve first level keys" do
         expect(new_config.keys).to eql(config.keys)
       end
 
-      it 'should preserve nested key' do
-        expect(new_config.inner.something2).to eq('blah2')
+      it "should preserve nested key" do
+        expect(new_config.inner.something2).to eq("blah2")
       end
 
-      it 'should add new nested key' do
+      it "should add new nested key" do
         expect(new_config.inner.something3).to eql("changed3")
       end
 
-      it 'should rewrite a merged value' do
+      it "should rewrite a merged value" do
         expect(new_config.inner.something1).to eql("changed1")
       end
     end
 
-    context 'when loading settings files' do
+    context "when loading settings files" do
       let(:config) do
         described_class.for(["#{fixture_path}/overwrite_arrays/config1.yml",
                              "#{fixture_path}/overwrite_arrays/config2.yml",
                              "#{fixture_path}/overwrite_arrays/config3.yml"])
       end
 
-      it 'should remove elements from settings' do
-        expect(config.array1).to eq(['item4', 'item5', 'item6'])
-        expect(config.array2.inner).to eq(['item4', 'item5', 'item6'])
+      it "should remove elements from settings" do
+        expect(config.array1).to eq(["item4", "item5", "item6"])
+        expect(config.array2.inner).to eq(["item4", "item5", "item6"])
         expect(config.array3).to eq([])
       end
-
     end
 
-    context 'adding sources' do
+    context "adding sources" do
       let(:sources) do
         [
           fixture_path/"settings.yml",
@@ -174,15 +173,15 @@ describe Ettin do
       end
       let(:config) { described_class.for(sources) }
 
-      it 'should still have the initial config' do
-        expect(config['size']).to eq(1)
+      it "should still have the initial config" do
+        expect(config["size"]).to eq(1)
       end
 
-      it 'should add keys from the added file' do
-        expect(config['tvrage']['service_url']).to eq('http://services.tvrage.com')
+      it "should add keys from the added file" do
+        expect(config["tvrage"]["service_url"]).to eq("http://services.tvrage.com")
       end
 
-      context 'overwrite with YAML file' do
+      context "overwrite with YAML file" do
         let(:sources) do
           [
             fixture_path/"settings.yml",
@@ -190,24 +189,23 @@ describe Ettin do
             fixture_path/"deep_merge2"/"config2.yml"
           ]
         end
-        it 'should overwrite the previous values' do
-          expect(config['tvrage']['service_url']).to eq('http://url2')
+        it "should overwrite the previous values" do
+          expect(config["tvrage"]["service_url"]).to eq("http://url2")
         end
       end
 
-      context 'overwrite with Hash' do
+      context "overwrite with Hash" do
         let(:sources) do
           [
             fixture_path/"settings.yml",
             fixture_path/"deep_merge2"/"config1.yml",
-            {tvrage: {service_url: 'http://url3'}}
+            { tvrage: { service_url: "http://url3" } }
           ]
         end
-        it 'should overwrite the previous values' do
-          expect(config['tvrage']['service_url']).to eq('http://url3')
+        it "should overwrite the previous values" do
+          expect(config["tvrage"]["service_url"]).to eq("http://url3")
         end
       end
     end
   end
-
 end

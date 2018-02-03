@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "ettin/source"
 require "erb"
 require "yaml"
@@ -6,7 +8,7 @@ module Ettin
   class YAMLSource < Source
     register_default(self)
 
-    def self.handles?(target)
+    def self.handles?(_target)
       true
     end
 
@@ -17,7 +19,7 @@ module Ettin
     def load
       return {} unless File.exist?(path)
       begin
-        YAML.load(ERB.new(File.read(path)).result) || {}
+        YAML.safe_load(ERB.new(File.read(path)).result) || {}
       rescue Psych::SyntaxError => e
         raise "YAML syntax error occurred while parsing #{@path}. " \
           "Please note that YAML must be consistently indented using " \
@@ -27,6 +29,7 @@ module Ettin
     end
 
     private
+
     attr_reader :path
   end
 end

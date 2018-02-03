@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "ettin/version"
 require "ettin/options"
 require "ettin/hash_factory"
