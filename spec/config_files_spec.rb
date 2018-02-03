@@ -1,4 +1,3 @@
-require "spec_helper"
 require "ettin/config_files"
 require "pathname"
 

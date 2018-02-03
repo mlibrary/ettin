@@ -9,6 +9,7 @@ module Ettin
 
     def initialize(hash)
       @hash = hash
+      @hash.deep_transform_keys!{|key| key.to_s.to_sym }
       @hash.default = nil
     end
 

@@ -1,4 +1,3 @@
-require 'spec_helper'
 require "ettin/hash_source"
 
 module Ettin

@@ -1,4 +1,3 @@
-require 'spec_helper'
 require "ettin/yaml_source"
 
 module Ettin
