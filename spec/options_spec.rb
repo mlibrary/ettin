@@ -163,6 +163,56 @@ describe Ettin::Options do
       end
     end
 
+    describe "Validation", skip: "Bad feature: unnecessary" do
+      let(:config) do
+        files = ["#{fixture_path}/custom_types/hash.yml"]
+        described_class.build(files)
+      end
+
+      it "should turn that setting into a Real Hash" do
+        expect(config.prices).to be_kind_of(Hash)
+      end
+
+      it "should map the hash values correctly" do
+        expect(config.prices[1]).to eq(2.99)
+        expect(config.prices[5]).to eq(9.99)
+        expect(config.prices[15]).to eq(19.99)
+        expect(config.prices[30]).to eq(29.99)
+      end
+    end
+
+    context 'when fail_on_missing option', skip: "Is this needed?" do
+      context 'is set to true' do
+        it 'should raise an error when accessing a missing key' do
+          config = described_class.build("#{fixture_path}/empty1.yml")
+
+          expect { config.not_existing_method }.to raise_error(KeyError)
+          expect { config[:not_existing_method] }.to raise_error(KeyError)
+        end
+
+        it 'should raise an error when accessing a removed key' do
+          config = described_class.build("#{fixture_path}/empty1.yml")
+
+          config.tmp_existing = 1337
+          expect(config.tmp_existing).to eq(1337)
+
+          config.delete_field(:tmp_existing)
+          expect { config.tmp_existing }.to raise_error(KeyError)
+          expect { config[:tmp_existing] }.to raise_error(KeyError)
+        end
+      end
+
+      context 'is set to false' do
+        before { Config.setup { |cfg| cfg.fail_on_missing = false } }
+
+        it 'should return nil when accessing a missing key' do
+          config = described_class.build("#{fixture_path}/empty1.yml")
+
+          expect(config.not_existing_method).to eq(nil)
+          expect(config[:not_existing_method]).to eq(nil)
+        end
+      end
+    end
   end # unwanted features
 
   it "should load a basic config file" do
@@ -282,23 +332,6 @@ describe Ettin::Options do
   end
 
 
-  describe "Validation", skip: "Bad feature: unnecessary" do
-    let(:config) do
-      files = ["#{fixture_path}/custom_types/hash.yml"]
-      described_class.build(files)
-    end
-
-    it "should turn that setting into a Real Hash" do
-      expect(config.prices).to be_kind_of(Hash)
-    end
-
-    it "should map the hash values correctly" do
-      expect(config.prices[1]).to eq(2.99)
-      expect(config.prices[5]).to eq(9.99)
-      expect(config.prices[15]).to eq(19.99)
-      expect(config.prices[30]).to eq(29.99)
-    end
-  end
 
   describe "defaults when key does not exist" do
     let(:config) { described_class.build({}) }
@@ -520,38 +553,6 @@ describe Ettin::Options do
   end
 
 
-  context 'when fail_on_missing option', skip: "Is this needed?" do
-    context 'is set to true' do
-      it 'should raise an error when accessing a missing key' do
-        config = described_class.build("#{fixture_path}/empty1.yml")
-
-        expect { config.not_existing_method }.to raise_error(KeyError)
-        expect { config[:not_existing_method] }.to raise_error(KeyError)
-      end
-
-      it 'should raise an error when accessing a removed key' do
-        config = described_class.build("#{fixture_path}/empty1.yml")
-
-        config.tmp_existing = 1337
-        expect(config.tmp_existing).to eq(1337)
-
-        config.delete_field(:tmp_existing)
-        expect { config.tmp_existing }.to raise_error(KeyError)
-        expect { config[:tmp_existing] }.to raise_error(KeyError)
-      end
-    end
-
-    context 'is set to false' do
-      before { Config.setup { |cfg| cfg.fail_on_missing = false } }
-
-      it 'should return nil when accessing a missing key' do
-        config = described_class.build("#{fixture_path}/empty1.yml")
-
-        expect(config.not_existing_method).to eq(nil)
-        expect(config[:not_existing_method]).to eq(nil)
-      end
-    end
-  end
 
   context '#key? and #has_key? methods' do
     let(:config) do

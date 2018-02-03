@@ -1,6 +1,11 @@
+require "ettin/key"
+
 module Ettin
   class Options
     include Enumerable
+    extend Forwardable
+
+    def_delegators :@hash, :keys, :empty?
 
     def initialize(hash)
       @hash = hash
@@ -9,10 +14,10 @@ module Ettin
 
     def method_missing(method, *args, &block)
       super(method, *args, &block) unless respond_to?(method)
-      if is_bang?(method) && !has_key?(debangify(method))
-        raise KeyError, "key #{debangify(method)} not found"
+      if is_bang?(method) && !has_key?(debang(method))
+        raise KeyError, "key #{debang(method)} not found"
       else
-        self[debangify(method)]
+        self[debang(method)]
       end
     end
 
@@ -25,34 +30,26 @@ module Ettin
     end
 
     def key?(key)
-      hash.has_key?(convert_key(key))
+      hash.has_key?(Key.new(key))
     end
     alias_method :has_key?, :key?
 
     def merge!(other)
-      @hash.deep_merge!(other.to_h, overwrite_arrays: true)
+      hash.deep_merge!(other.to_h, overwrite_arrays: true)
     end
 
     def [](key)
-      convert(hash[convert_key(key)])
+      convert(hash[Key.new(key)])
     end
 
     def []=(key, value)
-      hash[convert_key(key)] = value
+      hash[Key.new(key)] = value
     end
 
     def to_h
       hash
     end
     alias_method :to_hash, :to_h
-
-    def empty?
-      hash.empty?
-    end
-
-    def keys
-      hash.keys
-    end
 
     def eql?(other)
       to_h == other.to_h
@@ -65,11 +62,13 @@ module Ettin
 
     private
 
+    attr_reader :hash
+
     def is_bang?(method)
       method.to_s[-1] == "!"
     end
 
-    def debangify(method)
+    def debang(method)
       if is_bang?(method)
         method.to_s.chop.to_sym
       else
@@ -77,23 +76,16 @@ module Ettin
       end
     end
 
-    attr_reader :hash
-
     def convert(value)
       case value
       when Hash
-        Options.build(value)
+        Options.new(value)
       when Array
         value.map{|i| convert(i)}
       else
         value
       end
     end
-
-    def convert_key(key)
-      key.to_s.to_sym
-    end
-
   end
 
 end
