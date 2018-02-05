@@ -1,5 +1,9 @@
 # Ettin
 
+[![Build Status](https://travis-ci.org/mlibrary/ettin.svg?branch=master)](https://travis-ci.org/mlibrary/ettin)
+[![Maintainability](https://api.codeclimate.com/v1/badges/efd34b151bad7dacb994/maintainability)](https://codeclimate.com/github/mlibrary/ettin/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/efd34b151bad7dacb994/test_coverage)](https://codeclimate.com/github/mlibrary/ettin/test_coverage)
+
 ## Summary
 
 Ettin manages loading and accessing settings from your configuration files,
