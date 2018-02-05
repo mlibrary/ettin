@@ -4,7 +4,7 @@ require "ettin/config_files"
 require "pathname"
 
 module Ettin
-  describe ConfigFiles do
+  RSpec.describe ConfigFiles do
     it "should get setting files" do
       config = described_class.for(root: "root/config", env: "test")
       expect(config).to eq([

@@ -3,7 +3,7 @@
 require "ettin/options"
 require "json"
 
-describe Ettin::Options do
+RSpec.describe Ettin::Options do
   describe "#to_h, #to_hash" do
     let(:config) { described_class.new(hash) }
     let(:hash) do

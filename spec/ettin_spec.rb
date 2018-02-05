@@ -3,7 +3,7 @@
 require "ettin"
 require "pathname"
 
-describe Ettin do
+RSpec.describe Ettin do
   let(:fixture_path) { Pathname.new(__FILE__).dirname/"fixtures" }
 
   describe "::settings_files" do

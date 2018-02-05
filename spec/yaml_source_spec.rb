@@ -3,7 +3,7 @@
 require "ettin/sources/yaml_source"
 
 module Ettin
-  describe Sources::YamlSource do
+  RSpec.describe Sources::YamlSource do
     let(:fixture_path) { Pathname.new(__FILE__).dirname/"fixtures" }
 
     context "basic yml file" do
