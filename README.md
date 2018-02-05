@@ -1,39 +1,219 @@
 # Ettin
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/ettin`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Summary
 
-TODO: Delete this and the text above, and describe your gem
+Ettin manages loading and accessing settings from your configuration files,
+in an environment-aware fashion. It has only a single dependency on `deep_merge`,
+and provides only the functionality you actually need. It does not monkey-patch
+ruby nor does it pollute the global namespace.
+
+## Why should I use this over other options?
+
+* Ettin has far fewer dependencies than the top configuration gems.
+* Ettin does not pollute the global namespace.
+* Ettin provides only the features you need; or, put another way, Ettin does
+  not offer you paths that should not be followed.
+* Ettin is just plain ruby. No magic. No DSL.
+* Ettin works _everywhere_.
+
+## Compatibility
+
+Ettin is compatible with every ruby version, library, and framework.  This is
+possible because it does not rely on any specific runtime enviroment rather
+than the availability of the ruby core and standard library.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+1. Add it to your bundle and install like any other gem.
+2. Ettin provides an executable that will create the recommended configuration
+   files for you. These files will be empty. You can also create them yourself,
+   or simply specify your own files when you load Ettin.
+
+   `bundle exec ettin -v -p some/path`
+
+## Loading Settings
+
+Ettin is just plain ruby. There's nothing special about the objects it
+creates or how it creates them.  As such, it's up to the application to
+decide how it provides access to the configuration object. That may seem
+scary or confusing, but it's not--it's just plain ruby.  A few examples
+are below:
+
+Assign to a global constant using the default files:
 
 ```ruby
-gem 'ettin'
+Settings = Ettin.for(Ettin.settings_files("config", "development"))
 ```
 
-And then execute:
+Assign with custom files:
 
-    $ bundle
+```ruby
+Settings = Ettin.for("config/path/1.yml", "config/path/2.yml")
+```
 
-Or install it yourself as:
+Declare and assign to a top-level module:
 
-    $ gem install ettin
+```ruby
+module MyApp
+  class << self
+    def config
+      @config ||= Ettin.for(Ettin.settings_files("config"), ENV["MYAPP_ENV"])
+    end
+  end
+end
+```
 
-## Usage
+In a Rails initializer:
 
-TODO: Write usage instructions here
+```ruby
+Rails.application.configure do |config|
+  config.settings = Ettin.for(...)
+end
+```
 
-## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+## Default / Recommended Configuration Files
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+The provided ettin executable will create the following files,
+including a file for each environment of production, development,
+and test.
 
-## Contributing
+The name of the environment is not special, so you can easily create more.
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/ettin.
+    config/settings.yml
+    config/settings/#{environment}.yml
+    config/environments/#{environment}.yml
+
+    config/settings.local.yml
+    config/settings/#{environment}.local.yml
+    config/environments/#{environment}.local.yml
+
+Environment-specific settings take precedence over common, and the .local
+files take precedence over those. The local files are intendended to be gitignored.
+
+## Using the Settings
+
+### Access
+
+Entries are available via dot-notation:
+
+```ruby
+config.some_setting               #=> 5
+config.some.nested.setting        #=> "my nested string"
+```
+
+...or `[]` notation:
+
+```ruby
+config[:some_setting]             #=> 5
+config["some_setting"]            #=> 5
+config[:some][:nested][:setting]  #=> "my nested string"
+```
+
+When a setting is not present, the returned value will be `nil`. We find
+that this is what most people expect. If you'd like an exception to be
+thrown, you can use dot-notation with a bang added:
+
+
+```ruby
+config.some_missing_setting!      #=> raises a KeyError
+```
+
+### Assignment
+
+You can also change settings at runtime via a merge:
+
+```ruby
+config.some_setting               #=> 5
+config.merge!({some_setting: 22})
+config.some_setting               #=> 22
+```
+
+...or direction assignment:
+
+
+```ruby
+config.some_setting               #=> 5
+config.some_setting = 22
+config.some_setting               #=> 22
+```
+
+Both of these methods work for any level of nesting.
+
+
+### ERB
+
+In Ettin, YAML files support ERB by default.
+
+
+```ruby
+# in settings.yml
+
+redis:
+  hostname: <%= ENV["REDIS_HOST"] %>
+```
+
+### Environment-specific Configuration Files
+
+Environment-specific configuration files are supported. These files
+take precedence over the common configuration, as you'd expect.  The
+
+## FAQs
+
+### How can I reload the entire setting object?
+
+Ettin's settings object is just a plain ruby object, so you should simply
+assign your settings reference to something else.
+
+### Why these specific files?
+
+Ettin is designed to be an easy transition from users of
+[config](https://github.com/railsconfig/config). We also think that these
+locations are quite sensible.
+
+### How do I validate my settings?
+
+Validation is a concern that is driven by the application itself. Placing the
+responsibility for that validation in Ettin would violate the single-responsibility
+principle. You should validate the settings where they're used, such as in an
+initialization step.
+
+### How do I load environment variables into my settings?
+
+Just use ERB. See the
+[ERB docs](http://ruby-doc.org/stdlib-2.4.2/libdoc/erb/rdoc/ERB.html)
+for more information.
+
+### How can I pull in settings from another source?
+
+Ettin supports hashes and paths to yaml files out of the box. You can extend
+this support by creating a subclass of `Ettin::Source`. Your subclass will
+need to define `::handles?(target)`, make a call of `register(self)`, and
+define a `#load` method that returns a hash.
+
+
+## Authors
+
+* This project was inspired by [railsconfig](https://github.com/railsconfig/config).
+* The author and maintainer is [Bryan Hockey](https://github.com/malakai97)
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+    Copyright (c) 2015 The Regents of the University of Michigan.
+    All Rights Reserved.
+    Licensed according to the terms of the Revised BSD License.
+    See LICENSE.md for details.
+
+
+
+
+
+
+
+
+
+
+
+
+
+k
