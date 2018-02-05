@@ -23,7 +23,10 @@ ruby nor does it pollute the global namespace.
 
 ## Compatibility
 
-Ettin is compatible with every ruby version, library, and framework.  This is
+* ruby 2.3.x
+* ruby 2.4.x
+
+Ettin is compatible with every ruby library and framework.  This is
 possible because it does not rely on any specific runtime enviroment rather
 than the availability of the ruby core and standard library.
 
