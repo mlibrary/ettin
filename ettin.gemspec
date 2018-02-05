@@ -9,8 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Bryan Hockey"]
   spec.email         = ["bhock@umich.edu"]
 
-  spec.summary       = %q{Easiest and simplest way to add multi-environment settings to any
-                          ruby project.}
+  spec.summary       = %q{The best way to add settings in any ruby project.}
   spec.description   = %q{Ettin handles loading environment-specific settings in an easy, simple,
                           and maintainable manner with minimal dependencies or magic.}
   spec.license       = "Revised BSD"
