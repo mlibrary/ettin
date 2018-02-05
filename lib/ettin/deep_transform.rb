@@ -26,6 +26,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module Ettin
+
+  # Contains the logic for deep transformation of hash keys
   module DeepTransform
     # Returns a new hash with all keys converted by the block operation.
     # This includes the keys from the root hash and from all

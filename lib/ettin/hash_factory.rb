@@ -6,6 +6,8 @@ require "ettin/source"
 require "ettin/key"
 
 module Ettin
+
+  # Loads and deeply merges targets into a hash structure.
   class HashFactory
     def build(*targets)
       hash = Hash.new(nil)

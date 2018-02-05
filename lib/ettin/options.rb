@@ -3,6 +3,8 @@
 require "ettin/key"
 
 module Ettin
+
+  # An object that holds configuration settings / options
   class Options
     include Enumerable
     extend Forwardable
@@ -17,7 +19,7 @@ module Ettin
 
     def method_missing(method, *args, &block)
       super(method, *args, &block) unless respond_to?(method)
-      if is_bang?(method) && !key?(debang(method))
+      if bang?(method) && !key?(debang(method))
         raise KeyError, "key #{debang(method)} not found"
       else
         self[debang(method)]
@@ -28,7 +30,7 @@ module Ettin
     # * all methods our parents respond to
     # * all methods that are mostly alpha-numeric: /^[a-zA-Z_0-9]*$/
     # * all methods that are mostly alpha-numeric + !: /^[a-zA-Z_0-9]*\!$/
-    def respond_to?(method, include_all = false)
+    def respond_to_missing?(method, include_all = false)
       super(method, include_all) || /^[a-zA-Z_0-9]*\!?$/.match(method.to_s)
     end
 
@@ -67,12 +69,12 @@ module Ettin
 
     attr_reader :hash
 
-    def is_bang?(method)
+    def bang?(method)
       method.to_s[-1] == "!"
     end
 
     def debang(method)
-      if is_bang?(method)
+      if bang?(method)
         method.to_s.chop.to_sym
       else
         method

@@ -3,7 +3,7 @@
 require "ettin/sources/hash_source"
 
 module Ettin
-  describe HashSource do
+  describe Sources::HashSource do
     it "should take a hash as initializer" do
       source = described_class.new(foo: 5)
       expect(source.load).to eq(foo: 5)

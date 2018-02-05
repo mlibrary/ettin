@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require "bundler/setup"
 require "ettin/config_files"
@@ -22,7 +23,6 @@ parser = OptionParser.new do |opts|
     puts opts
     exit
   end
-
 end
 
 parser.parse!

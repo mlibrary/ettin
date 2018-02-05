@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Ettin
+
+  # Internal hash key that handles strings and symbols as
+  # the same type.
   class Key
     def initialize(key)
       @key = key

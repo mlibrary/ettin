@@ -3,8 +3,13 @@
 require "pathname"
 
 module Ettin
+
+  # The configuration files for a given root and environment
   class ConfigFiles
 
+    # @param root [String|Pathname]
+    # @param env [String]
+    # @return [Array<Pathname>]
     def self.for(root:, env:)
       root = Pathname.new(root)
       [
