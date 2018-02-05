@@ -23,7 +23,7 @@ module Ettin
     end
 
     def eql?(other)
-      to_sym = other.to_s.to_sym
+      to_sym == other.to_s.to_sym
     end
     alias_method :==, :eql?
 
