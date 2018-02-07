@@ -18,11 +18,14 @@ module Ettin
     end
 
     def method_missing(method, *args, &block)
-      super(method, *args, &block) unless respond_to?(method)
-      if bang?(method) && !key?(debang(method))
-        raise KeyError, "key #{debang(method)} not found"
+      if handles?(method)
+        if bang?(method) && !key?(debang(method))
+          raise KeyError, "key #{debang(method)} not found"
+        else
+          self[debang(method)]
+        end
       else
-        self[debang(method)]
+        super(method, *args, &block)
       end
     end
 
@@ -31,7 +34,7 @@ module Ettin
     # * all methods that are mostly alpha-numeric: /^[a-zA-Z_0-9]*$/
     # * all methods that are mostly alpha-numeric + !: /^[a-zA-Z_0-9]*\!$/
     def respond_to_missing?(method, include_all = false)
-      super(method, include_all) || /^[a-zA-Z_0-9]*\!?$/.match(method.to_s)
+      handles?(method) || super(method, include_all)
     end
 
     def key?(key)
@@ -68,6 +71,10 @@ module Ettin
     private
 
     attr_reader :hash
+
+    def handles?(method)
+      /^[a-zA-Z_0-9]*\!?$/.match(method.to_s)
+    end
 
     def bang?(method)
       method.to_s[-1] == "!"
