@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "ettin/key"
+require "deep_merge/rails_compat"
 
 module Ettin
 
@@ -43,7 +44,7 @@ module Ettin
     alias_method :has_key?, :key?
 
     def merge!(other)
-      hash.deep_merge!(other.to_h, overwrite_arrays: true)
+      hash.deeper_merge!(other.to_h, overwrite_arrays: true)
     end
 
     def [](key)
