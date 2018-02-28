@@ -3,7 +3,6 @@
 require "deep_merge/rails_compat"
 require "ettin/deep_transform"
 require "ettin/source"
-require "ettin/key"
 
 module Ettin
 
@@ -15,7 +14,7 @@ module Ettin
         .flatten
         .map {|target| Source.for(target) }
         .map(&:load)
-        .map {|h| h.deep_transform_keys {|key| Key.new(key) } }
+        .map {|h| h.deep_transform_keys {|key| key.to_s.to_sym } }
         .each {|h| hash.deeper_merge!(h, overwrite_arrays: true) }
       hash
     end

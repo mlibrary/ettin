@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "ettin/key"
 require "deep_merge/rails_compat"
 
 module Ettin
@@ -39,7 +38,7 @@ module Ettin
     end
 
     def key?(key)
-      hash.key?(Key.new(key))
+      hash.key?(convert_key(key))
     end
     alias_method :has_key?, :key?
 
@@ -48,11 +47,11 @@ module Ettin
     end
 
     def [](key)
-      convert(hash[Key.new(key)])
+      convert(hash[convert_key(key)])
     end
 
     def []=(key, value)
-      hash[Key.new(key)] = value
+      hash[convert_key(key)] = value
     end
 
     def to_h
@@ -87,6 +86,10 @@ module Ettin
       else
         method
       end
+    end
+
+    def convert_key(key)
+      key.to_s.to_sym
     end
 
     def convert(value)
