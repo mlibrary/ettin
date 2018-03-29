@@ -19,7 +19,6 @@ Gem::Specification.new do |spec|
   end
   spec.bindir        = "bin"
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  puts spec.executables
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "deep_merge"
