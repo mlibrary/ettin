@@ -90,14 +90,19 @@ The name of the environment is not special, so you can easily create more.
 
     config/settings.yml
     config/settings/#{environment}.yml
-    config/environments/#{environment}.yml
 
     config/settings.local.yml
     config/settings/#{environment}.local.yml
-    config/environments/#{environment}.local.yml
 
 Environment-specific settings take precedence over common, and the .local
 files take precedence over those. The local files are intendended to be gitignored.
+
+Ettin will also read from the following files commonly placed by other config gems.
+However, inclusion of these files is redundant, and can be confusing. Their inclusion
+is not recommended.
+
+    config/environments/#{environment}.yml
+    config/environments/#{environment}.local.yml
 
 ## Using the Settings
 
