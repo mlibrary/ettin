@@ -19,6 +19,11 @@ parser = OptionParser.new do |opts|
     options[:verbose] = v
   end
 
+  options[:compat] = false
+  opts.on("-c", "--[no-]compat", "Create extra config files for compatibility with railsconfig gem.") do |c|
+    options[:compat] = c
+  end
+
   opts.on("-h", "--help", "Prints this help") do
     puts opts
     exit
@@ -33,15 +38,26 @@ unless options[:start_path]
   exit 1
 end
 
-["development", "production", "test"]
+files = ["development", "production", "test"]
   .map {|env| Ettin::ConfigFiles.for(root: options[:start_path], env: env) }
   .flatten
   .sort.reverse
   .uniq
-  .each do |path|
-    path.parent.mkpath
-    FileUtils.touch path.to_s
-    puts path if options[:verbose]
-  end
+
+unless options[:compat]
+  files.reject!{|path| path.dirname.basename.to_s == "environments" }
+end
+
+files.each do |path|
+  path.parent.mkpath
+  FileUtils.touch path.to_s
+  puts path if options[:verbose]
+end
+
+puts "\nAdding .local.yml files to .gitignore" if options[:verbose]
+`echo "\n# Ignore local configuration files" >> .gitignore`
+files
+  .select{|path| path.basename.to_s.include?("local")}
+  .each{|path| `echo "#{path}" >> .gitignore`}
 
 puts "" if options[:verbose]
