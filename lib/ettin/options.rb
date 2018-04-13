@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "deep_merge/rails_compat"
+require "forwardable"
 
 module Ettin
 
