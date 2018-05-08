@@ -72,7 +72,25 @@ module MyApp
 end
 ```
 
-In a Rails initializer:
+Use one of the above variants in a Rails app's `application.rb`, making
+settings available to your `environment.rb`, `development.rb`, and initializers:
+
+```ruby
+module MyApp
+  class << self
+    def config
+      @config ||= Ettin.for(Ettin.settings_files(Rails.root.join("config")), Rails.env)
+    end
+  end
+
+  class Application < Rails::Application
+    # ...
+  end
+end
+```
+
+Add a section to the Rails configuration in an initializer (noting that load
+order is alphanumeric):
 
 ```ruby
 Rails.application.configure do |config|
