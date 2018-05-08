@@ -23,8 +23,9 @@ ruby nor does it pollute the global namespace.
 
 ## Compatibility
 
-* ruby 2.3.x
+* ruby 2.5.x
 * ruby 2.4.x
+* ruby 2.3.x
 
 As Ettin does not rely on any specific runtime environment other than
 the ruby core and standard library, it is compatible with every
