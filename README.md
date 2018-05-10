@@ -79,7 +79,7 @@ settings available to your `environment.rb`, `development.rb`, and initializers:
 module MyApp
   class << self
     def config
-      @config ||= Ettin.for(Ettin.settings_files(Rails.root.join("config")), Rails.env)
+      @config ||= Ettin.for(Ettin.settings_files("config", Rails.env))
     end
   end
 
