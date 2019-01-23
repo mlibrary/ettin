@@ -22,6 +22,7 @@ ruby nor does it pollute the global namespace.
 
 ## Compatibility
 
+* ruby 2.6.x
 * ruby 2.5.x
 * ruby 2.4.x
 * ruby 2.3.x
