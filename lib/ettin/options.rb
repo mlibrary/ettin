@@ -20,13 +20,35 @@ module Ettin
 
     def method_missing(method, *args, &block)
       if handles?(method)
-        if bang?(method) && !key?(debang(method))
-          raise KeyError, "key #{debang(method)} not found"
+        if !key?(debang(method))
+          if bang?(method)
+            raise KeyError, "key #{debang(method)} not found"
+          else
+            self[debang(method)]
+          end
         else
           self[debang(method)]
         end
       else
         super(method, *args, &block)
+      end
+
+      if handles?(method)
+        if bang?(method)
+          handle_bang_method(method)
+        else
+          self[debang(method)]
+        end
+      else
+        super(method, *args, &block)
+      end
+    end
+
+    def handle_bang_method(method)
+      if key?(debang(method))
+        self[debang(method)]
+      else
+        raise KeyError, "key #{debang(method)} not found"
       end
     end
 
@@ -42,6 +64,11 @@ module Ettin
       hash.key?(convert_key(key))
     end
     alias_method :has_key?, :key?
+
+    def merge(other)
+      new_hash = {}.deeper_merge(hash).deeper_merge!(other.to_h, overwrite_arrays: true)
+      self.class.new(new_hash)
+    end
 
     def merge!(other)
       hash.deeper_merge!(other.to_h, overwrite_arrays: true)

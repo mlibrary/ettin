@@ -57,6 +57,65 @@ RSpec.describe Ettin::Options do
     end
   end
 
+  context "Merging hash at runtime via #merge" do
+    let(:config) { described_class.new(hash) }
+    let(:hash) do
+      { size: 1, server: "google.com" }
+    end
+    let(:other_hash) { { options: { suboption: "value" }, server: "amazon.com" } }
+
+    it "should be chainable" do
+      expect(config.merge({})).to eq(config)
+    end
+
+    it "should preserve existing keys" do
+      expect(config.merge({}).keys).to eql(config.keys)
+    end
+
+    it "should recursively merge keys" do
+      expect(config.merge(other_hash).options.suboption).to eql("value")
+    end
+
+    it "should not mutate" do
+      expect { config.merge(other_hash) }.to_not change { config.server }
+    end
+
+    it "should rewrite a merged value" do
+      expect(config.merge(other_hash).server).to eql("amazon.com")
+    end
+  end
+
+  context "Merging nested hash at runtime via #merge" do
+    let(:config) { described_class.new(hash) }
+    let(:hash) do
+      {
+        size: 1, server: "google.com",
+        inner: { something1: "blah1", something2: "blah2" }
+      }
+    end
+    let(:other_hash) { { inner: { something1: "changed1", something3: "changed3" } } }
+
+    it "should preserve first level keys" do
+      expect(config.merge(other_hash).keys).to eql(config.keys)
+    end
+
+    it "should preserve nested key" do
+      expect(config.merge(other_hash).inner.something2).to eq("blah2")
+    end
+
+    it "should add new nested key" do
+      expect(config.merge(other_hash).inner.something3).to eql("changed3")
+    end
+
+    it "should not mutate" do
+      expect { config.merge(other_hash) }.to_not change { config.inner.something1 }
+    end
+
+    it "should rewrite a merged value" do
+      expect(config.merge(other_hash).inner.something1).to eql("changed1")
+    end
+  end
+
   context "Merging hash at runtime via #merge!" do
     let(:config) { described_class.new(hash) }
     let(:hash) do
