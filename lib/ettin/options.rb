@@ -72,6 +72,7 @@ module Ettin
 
     def merge!(other)
       hash.deeper_merge!(other.to_h, overwrite_arrays: true)
+      self
     end
 
     def [](key)

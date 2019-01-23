@@ -64,6 +64,10 @@ RSpec.describe Ettin::Options do
     end
     let(:other_hash) { { options: { suboption: "value" }, server: "amazon.com" } }
 
+    it "does not mutate the class" do
+      expect(config.merge({}).class).to eql(described_class)
+    end
+
     it "should be chainable" do
       expect(config.merge({})).to eq(config)
     end
@@ -122,6 +126,10 @@ RSpec.describe Ettin::Options do
       { size: 1, server: "google.com" }
     end
     let(:other_hash) { { options: { suboption: "value" }, server: "amazon.com" } }
+
+    it "does not mutate the class" do
+      expect(config.merge!({}).class).to eql(described_class)
+    end
 
     it "should be chainable" do
       expect(config.merge!({})).to eq(config)
