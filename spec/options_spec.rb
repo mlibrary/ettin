@@ -30,6 +30,27 @@ RSpec.describe Ettin::Options do
     end
   end
 
+  describe "Accessing keys that exist" do
+    let(:config) { described_class.new(a: :b) }
+
+    it { expect(config["a"]).to eql(:b) }
+    it { expect(config[:a]).to eql(:b) }
+    it { expect(config.a).to eql(:b) }
+    it { expect(config.a!).to eql(:b) }
+  end
+
+  describe "Accessing keys that do not exist" do
+    let(:config) { described_class.new({}) }
+
+    it { expect(config["a"]).to be_nil }
+    it { expect(config[:a]).to be_nil }
+    it { expect(config.a).to be_nil }
+
+    it "raises KeyError with dot! notation" do
+      expect { config.a! }.to raise_error(KeyError)
+    end
+  end
+
   describe "#to_h, #to_hash" do
     let(:config) { described_class.new(hash) }
     let(:hash) do
@@ -64,22 +85,6 @@ RSpec.describe Ettin::Options do
     it "is convertible to json" do
       json = JSON.dump(config.to_h)
       expect(JSON.parse(json)["section"]["servers"]).to be_kind_of(Array)
-    end
-  end
-
-  describe "defaults when key does not exist" do
-    let(:config) { described_class.new({}) }
-
-    it "returns nil with dot notation" do
-      expect(config.foo).to be_nil
-    end
-
-    it "returns nil with []" do
-      expect(config[:foo]).to be_nil
-    end
-
-    it "raises KeyError with dot! notation" do
-      expect { config.foo! }.to raise_error(KeyError)
     end
   end
 
