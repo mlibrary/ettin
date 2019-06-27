@@ -8,21 +8,23 @@ require "optparse"
 
 options = {}
 parser = OptionParser.new do |opts|
-  opts.banner = "Creates the standard, empty config files starting from the given path.\n" \
-    "Usage: ettin STARTPATH"
+  opts.banner = "Creates the standard, empty config files starting from the given " \
+    "path.\nUsage: ettin STARTPATH"
 
-  opts.on("-p", "--path STARTPATH", "The root under which the files will be created.") do |p|
-    options[:start_path] = p
-  end
+  opts.on("-p", "--path STARTPATH",
+    "The root under which the files will be created.") do |p|
+      options[:start_path] = p
+    end
 
   opts.on("-v", "--[no-]verbose", "Print paths created") do |v|
     options[:verbose] = v
   end
 
   options[:compat] = false
-  opts.on("-c", "--[no-]compat", "Create extra config files for compatibility with railsconfig gem.") do |c|
-    options[:compat] = c
-  end
+  opts.on("-c", "--[no-]compat",
+    "Create extra config files for compatibility with railsconfig gem.") do |c|
+      options[:compat] = c
+    end
 
   opts.on("-h", "--help", "Prints this help") do
     puts opts
@@ -45,7 +47,7 @@ files = ["development", "production", "test"]
   .uniq
 
 unless options[:compat]
-  files.reject!{|path| path.dirname.basename.to_s == "environments" }
+  files.reject! {|path| path.dirname.basename.to_s == "environments" }
 end
 
 files.each do |path|
@@ -57,7 +59,7 @@ end
 puts "\nAdding .local.yml files to .gitignore" if options[:verbose]
 `echo "\n# Ignore local configuration files" >> .gitignore`
 files
-  .select{|path| path.basename.to_s.include?("local")}
-  .each{|path| `echo "#{path}" >> .gitignore`}
+  .select {|path| path.basename.to_s.include?("local") }
+  .each {|path| `echo "#{path}" >> .gitignore` }
 
 puts "" if options[:verbose]

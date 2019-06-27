@@ -1,8 +1,8 @@
 # Ettin
 
 [![Build Status](https://travis-ci.org/mlibrary/ettin.svg?branch=master)](https://travis-ci.org/mlibrary/ettin)
-[![Maintainability](https://api.codeclimate.com/v1/badges/efd34b151bad7dacb994/maintainability)](https://codeclimate.com/github/mlibrary/ettin/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/efd34b151bad7dacb994/test_coverage)](https://codeclimate.com/github/mlibrary/ettin/test_coverage)
+[![Coverage Status](https://coveralls.io/repos/github/mlibrary/ettin/badge.svg?branch=master)](https://coveralls.io/github/mlibrary/ettin?branch=master)
+[![API Docs](https://img.shields.io/badge/API_docs-rubydoc.info-blue.svg)](https://www.rubydoc.info/github/mlibrary/ettin)
 
 ## Summary
 

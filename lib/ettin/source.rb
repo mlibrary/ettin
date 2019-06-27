@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Ettin
+
+  # Generic interface for data sources containing configuration information.
   class Source
     def self.for(target)
       registry.find {|candidate| candidate.handles?(target) }
@@ -8,7 +10,7 @@ module Ettin
     end
 
     def self.registry
-      @@registry ||= []
+      @@registry ||= [] # rubocop:disable Style/ClassVars
     end
 
     def self.register(candidate)
