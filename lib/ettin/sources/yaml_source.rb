@@ -21,6 +21,7 @@ module Ettin
 
       def load
         return {} unless File.exist?(path)
+
         begin
           YAML.safe_load(ERB.new(File.read(path)).result) || {}
         rescue Psych::SyntaxError => e

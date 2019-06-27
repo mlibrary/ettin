@@ -4,12 +4,12 @@ require "ettin/sources/hash_source"
 
 module Ettin
   RSpec.describe Sources::HashSource do
-    it "should take a hash as initializer" do
+    it "takes a hash as initializer" do
       source = described_class.new(foo: 5)
       expect(source.load).to eq(foo: 5)
     end
 
-    context "basic hash" do
+    context "with a basic hash" do
       let(:source) do
         described_class.new(
           "size" => 2,
@@ -20,12 +20,12 @@ module Ettin
         )
       end
 
-      it "should properly read the settings" do
+      it "properlies read the settings" do
         results = source.load
         expect(results["size"]).to eq(2)
       end
 
-      it "should properly read nested settings" do
+      it "properlies read nested settings" do
         results = source.load
         expect(results["section"]["size"]).to eq(3)
         expect(results["section"]["servers"]).to be_instance_of(Array)
@@ -33,12 +33,12 @@ module Ettin
       end
     end
 
-    context "parameter is not a hash" do
+    context "when the parameter is not a hash" do
       let(:source) do
         described_class.new "hello world"
       end
 
-      it "should return an empty hash" do
+      it "returns an empty hash" do
         results = source.load
         expect(results).to eq({})
       end

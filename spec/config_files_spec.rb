@@ -5,7 +5,7 @@ require "pathname"
 
 module Ettin
   RSpec.describe ConfigFiles do
-    it "should get setting files" do
+    it "gets setting files" do
       config = described_class.for(root: "root/config", env: "test")
       expect(config).to eq([
         Pathname.new("root/config/settings.yml"),

@@ -18,7 +18,7 @@ module Ettin
       @hash.default = nil
     end
 
-    def method_missing(method, *args, &block)
+    def method_missing(method, *args, &block) # rubocop:disable Style/MethodMissingSuper
       if handles?(method)
         if bang?(method)
           handle_bang_method(method)
@@ -44,7 +44,9 @@ module Ettin
     alias_method :has_key?, :key?
 
     def merge(other)
-      new_hash = {}.deeper_merge(hash).deeper_merge!(other.to_h, overwrite_arrays: true)
+      new_hash = {}
+        .deeper_merge(hash)
+        .deeper_merge!(other.to_h, overwrite_arrays: true)
       self.class.new(new_hash)
     end
 
