@@ -2,6 +2,7 @@
 
 require "deep_merge/rails_compat"
 require "forwardable"
+require "ettin/method_name"
 
 module Ettin
 
@@ -19,14 +20,15 @@ module Ettin
     end
 
     def method_missing(method, *args, &block) # rubocop:disable Style/MethodMissingSuper
-      if handles?(method)
-        if bang?(method)
-          handle_bang_method(method)
-        else
-          self[debang(method)]
-        end
+      return super(method, *args, &block) unless handles?(method)
+
+      method = MethodName.new(method)
+      if method.bang?
+        handle_bang_method(method)
+      elsif method.assignment?
+        handle_assignment_method(method, *args)
       else
-        super(method, *args, &block)
+        self[method.clean]
       end
     end
 
@@ -82,27 +84,19 @@ module Ettin
     attr_reader :hash
 
     def handle_bang_method(method)
-      if key?(debang(method))
-        self[debang(method)]
+      if key?(method.clean)
+        self[method.clean]
       else
-        raise KeyError, "key #{debang(method)} not found"
+        raise KeyError, "key #{method.clean} not found"
       end
+    end
+
+    def handle_assignment_method(method, *args)
+      self[method.clean] = args.first
     end
 
     def handles?(method)
-      /^[a-zA-Z_0-9]*\!?$/.match(method.to_s)
-    end
-
-    def bang?(method)
-      method.to_s[-1] == "!"
-    end
-
-    def debang(method)
-      if bang?(method)
-        method.to_s.chop.to_sym
-      else
-        method
-      end
+      /^[a-zA-Z_0-9]*(\!|=)?$/.match(method.to_s)
     end
 
     def convert_key(key)

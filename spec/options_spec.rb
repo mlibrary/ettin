@@ -4,6 +4,32 @@ require "ettin/options"
 require "json"
 
 RSpec.describe Ettin::Options do
+  describe "#[]=" do
+    let(:config) { described_class.new({}) }
+
+    it "assigns the key:value pair" do
+      config[:a] = :b
+      expect(config[:a]).to eql(:b)
+    end
+    it "assigns arrays" do
+      config[:a] = [:b, :c, :d]
+      expect(config[:a]).to eql([:b, :c, :d])
+    end
+  end
+
+  describe ".=" do
+    let(:config) { described_class.new({}) }
+
+    it "assigns the key:value pair" do
+      config.a = :b
+      expect(config.a).to eql(:b)
+    end
+    it "assigns arrays" do
+      config.a = [:b, :c, :d]
+      expect(config.a).to eql([:b, :c, :d])
+    end
+  end
+
   describe "#to_h, #to_hash" do
     let(:config) { described_class.new(hash) }
     let(:hash) do

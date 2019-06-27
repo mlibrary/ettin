@@ -23,7 +23,7 @@ Naming/FileName:
 
 RSpec/FilePath:
   Exclude:
-    - 'spec/options_spec.rb' # rubocop error
+    - 'spec/**/*.rb' # rubocop error
 
 Style/Documentation:
   Exclude:
