@@ -161,7 +161,7 @@ config.merge!({some_setting: 22})
 config.some_setting               #=> 22
 ```
 
-...or direction assignment:
+...or direct assignment:
 
 
 ```ruby
@@ -188,7 +188,7 @@ redis:
 ### Environment-specific Configuration Files
 
 Environment-specific configuration files are supported. These files
-take precedence over the common configuration, as you'd expect.  The
+take precedence over the common configuration, as you'd expect.
 
 ## FAQs
 
